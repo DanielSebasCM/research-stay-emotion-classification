@@ -1,0 +1,173 @@
+\chapter{Results}
+\section{Experiment results}
+After training and testing the models on the two datasets, across all metrics
+the LSTM model outperformed the NN, which in turn outperformed the rule based
+model. Training took the longest on the LSTM, followed by the NN and the
+fastest was the rule based system.
+
+When comparing between datasets, both the LSTM and rule based models performed
+better with the bigger (20x) Emotions dataset however training times did go up
+proportionally.
+
+\begin{table}[!ht]
+    \centering
+    % Bold values indicate the best result for each dataset.
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \small
+        \caption{Accuracy \(\%\)}
+        \begin{tabular}{lrr}
+            \toprule
+            Model        & dair\_ai\_emotion & Emotions       \\
+            \midrule
+            rules\_based & 60.20             & 65.27          \\
+            NN\_gpu      & 86.50             & 83.81          \\
+            NN           & 86.05             & 83.85          \\
+            LSTM\_gpu    & \textbf{89.00}    & \textbf{91.30} \\
+            LSTM         & 86.95             & 91.25          \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \small
+        \caption{Precision \(\%\)}
+        \begin{tabular}{lrr}
+            \toprule
+            Model        & dair\_ai\_emotion & Emotions       \\
+            \midrule
+            rules\_based & 60.19             & 66.15          \\
+            NN\_gpu      & 84.29             & 79.26          \\
+            NN           & 83.94             & 79.37          \\
+            LSTM\_gpu    & \textbf{84.94}    & 86.60          \\
+            LSTM         & 81.52             & \textbf{87.03} \\
+            \bottomrule
+        \end{tabular}
+
+    \end{minipage}
+    \vspace{0.1em}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \small
+        \caption{Recall \(\%\)}
+        \begin{tabular}{lrr}
+            \toprule
+            Model        & dair\_ai\_emotion & Emotions       \\
+            \midrule
+            rules\_based & 63.27             & 70.34          \\
+            NN\_gpu      & 81.23             & 78.28          \\
+            NN           & 80.76             & 78.05          \\
+            LSTM\_gpu    & \textbf{86.29}    & \textbf{87.86} \\
+            LSTM         & 84.39             & 85.78          \\
+            \bottomrule
+        \end{tabular}
+
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \small
+        \caption{F1 \(\%\)}
+        \begin{tabular}{lrr}
+            \toprule
+            Model        & dair\_ai\_emotion & Emotions       \\
+            \midrule
+            rules\_based & 55.49             & 62.38          \\
+            NN\_gpu      & 82.59             & 78.75          \\
+            NN           & 82.17             & 78.69          \\
+            LSTM\_gpu    & \textbf{85.58}    & \textbf{87.12} \\
+            LSTM         & 82.77             & 86.32          \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \vspace{0.1em}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \small
+        \caption{Training time (s)}
+        \begin{tabular}{lrr}
+            \toprule
+            Model        & dair\_ai\_emotion & Emotions      \\
+            \midrule
+            rules\_based & \textbf{0.08}     & \textbf{1.78} \\
+            NN\_gpu      & 7.71              & 159.38        \\
+            NN           & 20.58             & 2063.97       \\
+            LSTM\_gpu    & 25.50             & 645.32        \\
+            LSTM         & 195.69            & 5413.62       \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \small
+        \caption{Inference time [1000] (ms)}
+        \begin{tabular}{lrr}
+            \toprule
+            Model        & dair\_ai\_emotion & Emotions      \\
+            \midrule
+            rules\_based & 8.23              & 7.53          \\
+            NN\_gpu      & 4.47              & 4.36          \\
+            NN           & \textbf{4.06}     & \textbf{3.65} \\
+            LSTM\_gpu    & 19.76             & 17.29         \\
+            LSTM         & 43.54             & 47.64         \\
+            \bottomrule
+        \end{tabular}
+    \end{minipage}
+\end{table}
+
+\section{Discussion}
+
+The rule-based system exhibited the poorest performance, with a deficit
+exceeding 20 percent in nearly all metrics. Its inference time was
+unremarkable, as it was slower than the vanilla neural network. The primary
+strength of this approach was its minimal training time, which was negligible
+compared to the other models. However, given that training is a one-time cost,
+this advantage is not particularly significant.
+
+The LSTM model outperformed the NN model in all metrics,while taking longer to
+train and infer. The LSTM model outperformed the NN model by 1 to 6 percentage
+points in the dair\_ai\_emotion dataset.
+This difference is accentuated on the Emotions dataset where the difference is
+between 7 and 9 percent.
+
+In terms of training time, when using gpu acceleration the LSTM model was
+around 4x slower than the NN model. This is due to the multiple calls to the
+LSTM cells compared to the mean-pooling dome by the NN model. The LSTM model
+was
+also slower when inferring, taking around 5x longer than the NN model.
+
+When only the cpu was used these relationships get more complex. The LSTM model
+is affected disproportionately as the CPU cash was not able to store the full
+model. This can be seen in the near 9x increase in training time with the
+Emotions dataset.
+
+With these results in consideration I argue that the LSTM model provides a
+significant enough performance increase to justify the increase in training
+and inference time when GPU acceleration is available. If that is not the case,
+then vanilla NN model should be considered if training resources are limited.
+The rule based systems should be avoided as they provide the worst performance
+across all metrics.
+
+With accuracy above 90\% and F1 scores above 85\%, the LSTM model demonstrated
+impressive performance despite not being fully optimized. This raises an
+important question:
+
+\textit{How can the performance of emotion detection models be further
+    enhanced, and what impact would these new developments have on
+    training and inference times, particularly in resource-constrained
+    environments?}
+
+\section{Conclusion}
+
+In this study, we evaluated the performance of three different models: LSTM,
+NN, and rule-based on two datasets for emotion detection.
+
+In conclusion, the LSTM model provides a significant performance advantage
+for emotion detection, justifying its use when computational resources allow.
+However, in scenarios where resources are limited, the NN model serves as a
+practical alternative. The ongoing challenge remains to balance accuracy and
+efficiency, paving the way for future advancements in this field.
+These findings highlight the importance of considering both performance and
+computational requirements when selecting models for emotion detection tasks.

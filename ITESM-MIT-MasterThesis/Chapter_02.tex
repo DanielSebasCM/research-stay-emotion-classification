@@ -1,0 +1,129 @@
+\chapter{Experimentation}\label{chapter:chapter02}
+
+\section{Models}
+Hyperparameter optimization was not performed in depth for any of the models as
+this was outside of teh scope of this study. The hyperparameters were chosen
+based on the best practices for each model and the results of the initial
+tests.
+
+\subsection{Rule based}
+
+For the rule based system lexicon based approach was tested. In this model, for
+a given dataset a lexicon is built where we simply keep track of the words used
+in the texts for each emotion label, this part can be tough of as the training
+step. When all the words have been counted they are truncated in order to keep
+the
+n most common words for each emotion. This is the only hyperparameter for this
+model which we chose to be 350 words.
+
+Then when we want to classify a new text we simply count the number of
+words in the text that are in the lexicon for each emotion and assign the label
+with the most words in the text, this can me tough of as inference.
+
+For preprocessing punctuation and stop words were removed from the text and all
+words were lowercased.
+
+\subsection{Neural Network}
+
+For the neural network a simple feed forward neural network with an
+embedding layer, a hidden layer and an output layer was tested. The embedding
+layer is
+just a linear layer that maps each token in the input sequence
+into a length 100 vector (embedding dimensions). After this, mean pooling is
+applied to the output tensor to collapse the sequence into a single vector of
+size 100 (embedding dimensions).
+
+At the end of the network a hidden linear layer with the number of
+emotions as its output size is used. When inferring the argmax of the output
+tensor is
+taken as the predicted emotion.
+
+For preprocessing punctuation and stop words were removed from the text and all
+words were lowercased. The sequences were also truncated to a maximum length of
+25 tokens. If shorter than 25 tokens the sequence was padded with the special
+token '\textless PAD\textgreater'.
+
+The hyperparameter for this model are the embedding dimensions, the max
+sequence length, the batch size, the learning rate and the number of epochs.
+These were chosen to be 100, 25, 128, 0.001 and 100 respectively.
+
+\subsection{LSMT}
+
+These model has an almost identical architecture to the neural network but
+instead of the pooling layer a LSTM layer with a hidden size of 128.
+Preprocessing was also almost identical, with the only difference being that
+sequences were not truncated. The hyperparameters were also the same as the NN.
+
+\section{Metrics}
+
+The metrics used to evaluate the models were accuracy, precision, recall and F1
+score. These were chosen as they are the most common metrics used to evaluate
+classification models stated by \cite{lieskovska2021review}.
+
+the following acronyms will be used: TP (True Positives), TN (True Negatives),
+FP (False Positives), FN (False Negatives).
+
+\subsection{Accuracy}
+
+Accuracy simply represents the percentage of correctly classified samples,
+meaning the true positives divided by the total number of samples.
+
+\begin{equation}
+    \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+\subsection{Precision}
+
+Precision represents the percentage of correctly classified positive samples of
+all the samples classified as positive. Precision prioritizes reducing false
+positives.
+
+\begin{equation}
+    \text{Precision} = \frac{TP}{TP + FP}
+\end{equation}
+
+\subsection{Recall}
+
+Recall represents the percentage of correctly classified positive samples of
+all the positive samples. Recall prioritizes reducing false negatives, even if
+it might lead to more false positives.
+
+\begin{equation}
+    \text{Recall} = \frac{TP}{TP + FN}
+\end{equation}
+
+\subsection{F1 score}
+
+The F1 score is the harmonic mean of precision and recall. This means that it
+gives equal weight to both precision and recall. It is calculated as follows:
+
+\begin{equation}
+    \text{F1 score} = 2 \times \frac{\text{Precision} \times
+        \text{Recall}}{\text{Precision} + \text{Recall}}
+\end{equation}
+
+\subsection{Training and inference time}
+
+The training and inference time were also measured for each model. This was
+done by averaging the time it taken to process 1000 samples. For training the
+time was measured from the start of the training loop to the end of the training
+loop.
+
+\section{Datasets}
+
+The first dataset used for this study were dair-ai/emotion
+\cite{saravia-etal-2018-carer}, the most popular dataset for emotion detection
+in huggingface which was the dataset provided for the research stay.
+The dair-ai/emotion dataset is a collection of tweets tagged with 6 different
+emotions: anger, fear, joy, love, sadness, and surprise.
+
+The second dataset used was the Emotions dataset
+\cite{nidula_elgiriyewithana_2024} from
+Kaggle. A highly up-voted dataset for emotion detection. It has the same 6
+emotion labels as the dair-ai/emotion dataset.
+
+\section{Hardware}
+
+All the tests were run on a zephirus g14 laptop (GA401QM) with an AMD Ryzen 9
+5900HS and a Nvidia RTX 3060. The tests were run on both on the cpu and with
+gpu acceleration for the neural network and LSTM models.
